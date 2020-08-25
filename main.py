@@ -3,7 +3,7 @@ from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
 
-from nlp_tasks import question_answering, summarization
+from nlp_tasks import question_answering, summarization, generation
 
 
 external_stylesheets = ["https://codepen.io/roskoN/pen/xxGqxdm.css"]
@@ -54,7 +54,13 @@ app.layout = html.Div(
                 # Text summarization
                 dcc.Textarea(id='summarize-input',style={"visibility": "hidden"}),
                 html.Button('Submit', id='summarize-button', n_clicks=0, style={"visibility": "hidden"}),
-                html.Div(id='summarize-output', style={"visibility": "hidden"})     
+                html.Div(id='summarize-output', style={"visibility": "hidden"}),
+
+                # Text generation
+                dcc.Textarea(id='generation-input',style={"visibility": "hidden"}),
+                html.Button('Submit', id='generation-button', n_clicks=0, style={"visibility": "hidden"}),
+                dcc.Input(id="generation-length", type="number", style={"visibility": "hidden"}),
+                html.Div(id='generation-output', style={"visibility": "hidden"})          
 
 
             ],
@@ -108,7 +114,25 @@ def output_task(chosen_task):
         ])
         return div
     elif chosen_task == "generation":
-        return html.H2("generation", style={"text-align": "center", "font-weight": "bold"})
+        div = html.Div([
+            html.H2(
+                "Input A Starting Point: ",
+                style={"text-align": "center", "font-weight": "bold"},
+            ),
+            dcc.Textarea(
+                id='generation-input',
+                value='As far as I am concerned, I will...',
+                style={'width': '100%', 'height': 100},
+            ),
+            dcc.Input(
+                id="generation-length", type="number", placeholder="insert a number",
+                min=0, max=1000, step=10,
+            ),
+            html.Button('Submit', id='generation-button', n_clicks=0),
+            html.Div(id='generation-output', style={'whiteSpace': 'pre-line'})
+
+        ])
+        return div
     else:
         return None
 
@@ -156,6 +180,25 @@ def update_output(n_clicks, summarize_input):
                     ),
         )
         div.append(f'{summary}')
+        return html.Div(div)
+
+@app.callback(
+    Output('generation-output', 'children'),
+    [Input('generation-button', 'n_clicks')],
+    [State('generation-input', 'value'), State('generation-length', 'value')]
+)
+def update_output(n_clicks, generation_input, generation_length):
+    if n_clicks > 0:
+        generated_text = generation.create_generated_text(generation_input, generation_length)
+        div = []
+        div.append(html.Br())
+        div.append(
+            html.H2(
+                "Here's the generated text: ",
+                style={"text-align": "center", "font-weight": "bold"},
+                    ),
+        )
+        div.append(f'{generated_text}')
         return html.Div(div)
 
 if __name__ == "__main__":
