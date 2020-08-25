@@ -1,45 +1,24 @@
-from transformers import AutoTokenizer, AutoModelForQuestionAnswering
-import torch
+from transformers import pipeline
 
-tokenizer = AutoTokenizer.from_pretrained(
-    "bert-large-uncased-whole-word-masking-finetuned-squad"
-)
-model = AutoModelForQuestionAnswering.from_pretrained(
-    "bert-large-uncased-whole-word-masking-finetuned-squad"
-)
+summarizer = pipeline("summarization")
 
-text = r"""
-Insurance is a means of protection from financial loss. It is a form of risk management, primarily used to hedge against the risk of a contingent or uncertain loss.
-
-An entity which provides insurance is known as an insurer, insurance company, insurance carrier or underwriter. A person or entity who buys insurance is known as an insured or as a policyholder. The insurance transaction involves the insured assuming a guaranteed and known relatively small loss in the form of payment to the insurer in exchange for the insurer's promise to compensate the insured in the event of a covered loss. The loss may or may not be financial, but it must be reducible to financial terms, and usually involves something in which the insured has an insurable interest established by ownership, possession, or pre-existing relationship.
-
-The insured receives a contract, called the insurance policy, which details the conditions and circumstances under which the insurer will compensate the insured. The amount of money charged by the insurer to the policyholder for the coverage set forth in the insurance policy is called the premium. If the insured experiences a loss which is potentially covered by the insurance policy, the insured submits a claim to the insurer for processing by a claims adjuster. The insurer may hedge its own risk by taking out reinsurance, whereby another insurance company agrees to carry some of the risks, especially if the primary insurer deems the risk too large for it to carry.
+ARTICLE = """ New York (CNN)When Liana Barrientos was 23 years old, she got married in Westchester County, New York.
+A year later, she got married again in Westchester County, but to a different man and without divorcing her first husband.
+Only 18 days after that marriage, she got hitched yet again. Then, Barrientos declared "I do" five more times, sometimes only within two weeks of each other.
+In 2010, she married once more, this time in the Bronx. In an application for a marriage license, she stated it was her "first and only" marriage.
+Barrientos, now 39, is facing two criminal counts of "offering a false instrument for filing in the first degree," referring to her false statements on the
+2010 marriage license application, according to court documents.
+Prosecutors said the marriages were part of an immigration scam.
+On Friday, she pleaded not guilty at State Supreme Court in the Bronx, according to her attorney, Christopher Wright, who declined to comment further.
+After leaving court, Barrientos was arrested and charged with theft of service and criminal trespass for allegedly sneaking into the New York subway through an emergency exit, said Detective
+Annette Markowski, a police spokeswoman. In total, Barrientos has been married 10 times, with nine of her marriages occurring between 1999 and 2002.
+All occurred either in Westchester County, Long Island, New Jersey or the Bronx. She is believed to still be married to four men, and at one time, she was married to eight men at once, prosecutors say.
+Prosecutors said the immigration scam involved some of her husbands, who filed for permanent residence status shortly after the marriages.
+Any divorces happened only after such filings were approved. It was unclear whether any of the men will be prosecuted.
+The case was referred to the Bronx District Attorney\'s Office by Immigration and Customs Enforcement and the Department of Homeland Security\'s
+Investigation Division. Seven of the men are from so-called "red-flagged" countries, including Egypt, Turkey, Georgia, Pakistan and Mali.
+Her eighth husband, Rashid Rajput, was deported in 2006 to his native Pakistan after an investigation by the Joint Terrorism Task Force.
+If convicted, Barrientos faces up to four years in prison.  Her next court appearance is scheduled for May 18.
 """
 
-questions = [
-    "What is insurance?",
-    "What is an entity that provides insurance called?"
-]
-
-for question in questions:
-    inputs = tokenizer.encode_plus(
-        question, text, add_special_tokens=True, return_tensors="pt"
-    )
-    input_ids = inputs["input_ids"].tolist()[0]
-
-    text_tokens = tokenizer.convert_ids_to_tokens(input_ids)
-    answer_start_scores, answer_end_scores = model(**inputs)
-
-    answer_start = torch.argmax(
-        answer_start_scores
-    )  # Get the most likely beginning of answer with the argmax of the score
-    answer_end = (
-        torch.argmax(answer_end_scores) + 1
-    )  # Get the most likely end of answer with the argmax of the score
-
-    answer = tokenizer.convert_tokens_to_string(
-        tokenizer.convert_ids_to_tokens(input_ids[answer_start:answer_end])
-    )
-
-    print(f"Question: {question}")
-    print(f"Answer: {answer}\n")
+print(summarizer(ARTICLE, max_length=130, min_length=30)[0]['summary_text'])

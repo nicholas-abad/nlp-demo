@@ -145,18 +145,18 @@ def update_output(n_clicks, context_value, question_value):
     [State('summarize-input', 'value')]
 )
 def update_output(n_clicks, summarize_input):
-    summary = summarization.summarize_article(summarize_input)
-    div = []
-    div.append(html.Br())
-    div.append(
-        html.H2(
-            "Here's a Summary: ",
-            style={"text-align": "center", "font-weight": "bold"},
-                ),
-    )
-    div.append(f'{summary}')
-    return html.Div(div)
-
+    if n_clicks > 0:
+        summary = summarization.summarize_article(summarize_input)
+        div = []
+        div.append(html.Br())
+        div.append(
+            html.H2(
+                "Here's a Summary: ",
+                style={"text-align": "center", "font-weight": "bold"},
+                    ),
+        )
+        div.append(f'{summary}')
+        return html.Div(div)
 
 if __name__ == "__main__":
     app.run_server(host="0.0.0.0", port=5050)
