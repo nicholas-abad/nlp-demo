@@ -202,4 +202,4 @@ def update_output(n_clicks, generation_input, generation_length):
         return html.Div(div)
 
 if __name__ == "__main__":
-    app.run_server(host="0.0.0.0", port=5050)
+    app.run_server(debug=True)
