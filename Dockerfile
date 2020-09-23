@@ -6,4 +6,7 @@ RUN pip install -r requirements.txt
 
 COPY ./ ./
 
+COPY ./start.sh /start.sh
+RUN chmod +x /start.sh
+
 RUN ls
