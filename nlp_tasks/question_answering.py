@@ -8,14 +8,17 @@ model = AutoModelForQuestionAnswering.from_pretrained(
     "bert-large-uncased-whole-word-masking-finetuned-squad"
 )
 
-def generate_answers(
-    context,
-    questions
-):
+
+def generate_answers(context, questions):
     answers = []
     for question in questions:
         inputs = tokenizer.encode_plus(
-            question, context, add_special_tokens=True, return_tensors="pt", max_length=1024, truncation=True
+            question,
+            context,
+            add_special_tokens=True,
+            return_tensors="pt",
+            max_length=1024,
+            truncation=True,
         )
         input_ids = inputs["input_ids"].tolist()[0]
 
