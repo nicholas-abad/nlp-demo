@@ -12,4 +12,4 @@ else
 fi
 
 # Start Gunicorn
-exec gunicorn -k egg:meinheld#gunicorn_worker --timeout 300 -c "$GUNICORN_CONF" "$APP_MODULE"
+exec gunicorn -k egg:meinheld#gunicorn_worker --timeout 900 -c "$GUNICORN_CONF" "$APP_MODULE"
